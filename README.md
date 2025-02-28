@@ -47,7 +47,7 @@ cd blogpostapi
 Install dependencies:
 npm install
 
-Create a .env file in the root directory:
+###Create a .env file in the root directory:
 PORT = 5001
 MONGO_URI = mongodb://localhost:27017/blogapi
 JWT_SECRET = your_jwt_secret
@@ -60,8 +60,8 @@ npm run seed-admin
 Start the server:
 npm start
 
-API Documentation
-Access the Swagger documentation at:
+## API Documentation
+## Access the Swagger documentation at:
 http://localhost:5001/api-docs
 
 API Endpoints
