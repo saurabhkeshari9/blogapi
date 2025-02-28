@@ -1,0 +1,25 @@
+# Node.js dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+
+# Swagger generated files
+swagger.json
+swagger.yaml
+
+# OS/Editor specific files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Uploads & User-generated files
+uploads/*
+!uploads/.gitkeep  
+
+# Compiled files
+dist/
+build/
