@@ -3,7 +3,9 @@ const FAQ = require("../../models/faqsmodel");
 // Get all FAQs
 exports.getAllFAQs = async (req, res) => {
   try {
-    const faqs = await FAQ.find();
+    const faqs = await FAQ.find({ isDeleted: false }); 
+    if (!faqs) return res.status(400).json({ statusCode: 400, message: "FAQ not found" });
+
     return res.status(200).json({ statusCode: 200, message: "FAQs List", data: faqs });
   } catch (err) {
     return res.status(500).json({ statusCode: 500, message: err.message });
@@ -29,7 +31,11 @@ exports.updateFAQ = async (req, res) => {
     const { faqId } = req.params;
     const { question, answer } = req.body;
 
-    const updatedFAQ = await FAQ.findByIdAndUpdate(faqId, { question, answer }, { new: true });
+    const updatedFAQ = await FAQ.findOneAndUpdate(
+      { _id: faqId, isDeleted: false }, // Only update non-deleted FAQs
+      { question, answer },
+      { new: true }
+    );
 
     if (!updatedFAQ) return res.status(400).json({ statusCode: 400, message: "FAQ not found" });
 
@@ -39,12 +45,16 @@ exports.updateFAQ = async (req, res) => {
   }
 };
 
-// Delete an FAQ
+// Soft delete an FAQ
 exports.deleteFAQ = async (req, res) => {
   try {
     const { faqId } = req.params;
 
-    const deletedFAQ = await FAQ.findByIdAndDelete(faqId);
+    const deletedFAQ = await FAQ.findOneAndUpdate(
+      { _id: faqId, isDeleted: false }, // Only delete non-deleted FAQs
+      { isDeleted: true },
+      { new: true }
+    );
 
     if (!deletedFAQ) return res.status(400).json({ statusCode: 400, message: "FAQ not found" });
 

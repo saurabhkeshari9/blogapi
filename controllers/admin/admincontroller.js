@@ -1,5 +1,6 @@
 const Admin = require("../../models/adminmodel");
 const User = require("../../models/user");
+const Post = require("../../models/post");
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -9,8 +10,13 @@ exports.loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const admin = await Admin.findOne({ email });
-    if (!admin || !(await bcrypt.compare(password, admin.password))) {
+    const admin = await Admin.findOne({ email }).select("name email password isActive").lean();
+    console.log(admin)
+    if (!admin || !admin.isActive) {
+      return res.status(400).json({ statusCode: 400, message: "Admin is not active or does not exist" });
+    }
+
+    if (!(await bcrypt.compare(password, admin.password))) {
       return res.status(400).json({ statusCode: 400, message: "Invalid credentials" });
     }
 
@@ -18,17 +24,12 @@ exports.loginAdmin = async (req, res) => {
       expiresIn: "7d",
     });
 
-    const adminData = {
-      id: admin._id,
-      name: admin.name,
-      email: admin.email,
-      token,
-    };
+    delete admin.password;
 
     return res.status(200).json({
       statusCode: 200,
       message: "Admin login successful",
-      data: adminData,
+      data: {...admin, token} ,
     });
   } catch (err) {
     return res.status(500).json({ statusCode: 500, message: err.message });
@@ -38,11 +39,10 @@ exports.loginAdmin = async (req, res) => {
 // Get all users
 exports.getAllUsers = async (req, res) => {
   try {
-    if (!req.admin) {
-      return res.status(400).json({ statusCode: 400, message: "Access denied! Admins only." });
-    }
-
     const users = await User.find({}).select("-password");
+    if (!users) {
+      return res.status(400).json({ statusCode: 400, message: "No User Data Retrieved" });
+    }
     return res.status(200).json({ statusCode: 200, message: "Users data retrieved successfully", data: users });
   } catch (err) {
     return res.status(500).json({ statusCode: 500, message: err.message });
@@ -71,32 +71,59 @@ exports.blockUser = async (req, res) => {
   }
 };
 
-const Post = require("../../models/post");
-
 exports.getAllUserPosts = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
-    const pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
+    let { limit = 10, lastId, page = 1 } = req.query;
+      limit = parseInt(limit, 10);
+      page = parseInt(page, 10);
+  
+      const filter = { isDeleted: false };
+      if (lastId) filter._id = { $lt: new mongoose.Types.ObjectId(lastId) };
 
-    const totalPosts = await Post.countDocuments({ isDeleted: false });
-    const posts = await Post.find({ isDeleted: false })
-      .sort({ createdAt: -1 })
-      .skip((pageNum - 1) * limitNum)
-      .limit(limitNum);
+    const result = await Post.aggregate([
+      { $match: filter }, // Get only non-deleted posts
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      
+       { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } }, 
+       {
+        $group: {
+          _id: "$user._id",
+          email: { $first: "$user.email" },
+          name: { $first: "$user.name" },
+          posts: {
+            $push: {
+              id: "$_id",
+              title: "$title",
+              content: "$content",
+              image: "$image",
+              createdAt: "$createdAt"
+            }
+          }
+        }
+      },
+      { $project: { _id: 0, email: 1, name: 1, posts: 1 } },
+      { $sort: { "posts.createdAt": -1 } }, // Sort by creation date
+      { $limit: limit }
+    ]);
 
-    return res.status(200).json({
-      statusCode: 200,
-      message: "All User Posts List",
-      currentPage: pageNum,
-      totalPages: Math.ceil(totalPosts / limitNum),
-      totalPosts,
-      data: posts,
-    });
-  } catch (err) {
-    return res.status(500).json({ statusCode: 500, error: err.message });
+    const nextCursor = result.length ? result[result.length - 1].posts[result[result.length - 1].posts.length - 1].id : null;
+    if (!result) {
+      return res.status(400).json({ statusCode: 400, message: "No posts found or all are deleted" });
+    }
+    res.status(200).json({ statusCode: 200, message: "All User Posts List", data: result, nextCursor, currentPage: page });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ statusCode: 500, message: "Internal Server Error", error });
   }
 };
+
 
 exports.updateUserPost = async (req, res) => {
   try {
