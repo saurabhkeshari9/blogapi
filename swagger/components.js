@@ -88,7 +88,7 @@ module.exports = {
       },
       Comment: {
         type: "object",
-        required: ["postId", "content"],
+        required: ["content"],
         properties: {
           postId: {
             type: "string",
@@ -107,6 +107,49 @@ module.exports = {
           },
         },
       },
+      PrivacyPolicy: {
+        type: "object",
+        required: ["title", "content"],
+        properties: {
+          id: {
+            type: "string",
+            example: "60d0fe4f5311236168a109ca"
+          },
+          title: {
+            type: "string",
+            description: "The title of the privacy policy",
+            example: "Privacy Policy"
+          },
+          content: {
+            type: "string",
+            description: "The content of the privacy policy",
+            example: "Your detailed privacy policy content here..."
+          },
+          isActive: {
+            type: "boolean",
+            description: "Indicates if the privacy policy is active",
+            example: true
+          },
+          lastUpdated: {
+            type: "string",
+            format: "date-time",
+            description: "The date and time when the privacy policy was last updated",
+            example: "2021-06-21T14:48:00.000Z"
+          },
+          createdAt: {
+            type: "string",
+            format: "date-time",
+            description: "The date and time when the privacy policy was created",
+            example: "2021-06-21T14:48:00.000Z"
+          },
+          updatedAt: {
+            type: "string",
+            format: "date-time",
+            description: "The date and time when the privacy policy was last updated",
+            example: "2021-06-21T14:48:00.000Z"
+          }
+        }
+      }
     },
     responses: {
       UnauthorizedError: {

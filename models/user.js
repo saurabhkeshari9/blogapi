@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     },
     password: { type: String, required: true },
     isBlocked: { type: Boolean, default: false },
-    role: { type: String, enum: ["user", "admin"], default: "user"},
+    //role: { type: String, enum: ["user", "admin"], default: "user"},
   },
   { timestamps: true }
 );

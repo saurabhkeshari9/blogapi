@@ -30,14 +30,18 @@ const options = {
       },
     ],
     tags: [
-      { name: "Auth", description: "Authentication endpoints" },
       { name: "Admin", description: "Admin operations" },
-      { name: "Posts", description: "Post operations" },
-      { name: "Comments", description: "Comment operations" },
-      { name: "FAQs", description: "FAQ operations" },
       { name: "AdminPosts", description: "Admin post operations" },
       { name: "AdminComments", description: "Admin comment operations" },
       { name: "AdminFAQs", description: "Admin FAQ operations" },
+      { name: "AdminPrivacy", description: "Admin Privacy Policy operations" },
+      { name: "UserAuth", description: "Authentication endpoints" },
+      { name: "Posts", description: "Post operations" },
+      { name: "Comments", description: "Comment operations" },
+      { name: "FAQs", description: "FAQ operations" },
+      { name: "Privacy", description: "Pivacy operations" },
+
+      
     ],
     paths: {
       ...adminRoutes,

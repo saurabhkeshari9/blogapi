@@ -2,7 +2,7 @@ module.exports = {
   "/api/userauth/register": {
     post: {
       summary: "Register a new user",
-      tags: ["Auth"],
+      tags: ["UserAuth"],
       requestBody: {
         required: true,
         content: {
@@ -36,7 +36,7 @@ module.exports = {
   "/api/userauth/login": {
     post: {
       summary: "Login a user",
-      tags: ["Auth"],
+      tags: ["UserAuth"],
       requestBody: {
         required: true,
         content: {
@@ -487,5 +487,46 @@ module.exports = {
         },
       },
     },
+  },
+  "/api/userpolicy/privacy": {
+    get: {
+      tags: ["Privacy"],
+      summary: "Get the active privacy policy",
+      security: [{ bearerAuth: [] }],
+      responses: {
+        200: {
+          description: "Privacy policy retrieved successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  statusCode: {
+                    type: "number",
+                    example: 200
+                  },
+                  message: {
+                    type: "string",
+                    example: "Privacy policy retrieved successfully"
+                  },
+                  data: {
+                    $ref: "#/components/schemas/PrivacyPolicy"
+                  }
+                }
+              }
+            }
+          }
+        },
+        400: {
+          description: "No active privacy policy found"
+        },
+        500: {
+          description: "Some server error"
+        }
+        
+      }
+        
+    }
+        
   },
 };

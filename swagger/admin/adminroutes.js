@@ -188,7 +188,7 @@ module.exports = {
         }
       },
       responses: {
-        201: {
+        200: {
           description: "Post created successfully",
           content: {
             "application/json": {
@@ -424,7 +424,7 @@ module.exports = {
             }
           }
         },
-        401: {
+        400: {
           description: "Unauthorized access"
         },
         403: {
@@ -680,6 +680,197 @@ module.exports = {
           description: "Some server error"
         }
       }
+    },
+      "/api/adminprivacy/createprivacy": {
+        post: {
+          tags: ["AdminPrivacy"],
+          summary: "Create a new privacy policy",
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/PrivacyPolicy"
+                }
+              }
+            }
+          },
+          responses: {
+            200: {
+              description: "Privacy policy created successfully",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      statusCode: {
+                        type: "number",
+                        example: 200
+                      },
+                      message: {
+                        type: "string",
+                        example: "Privacy policy created successfully"
+                      },
+                      data: {
+                        $ref: "#/components/schemas/PrivacyPolicy"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            400: {
+              description: "Bad request"
+            },
+            500: {
+              description: "Some server error"
+            }
+          }
+        }
+      },
+      "/api/adminprivacy/updateprivacy/{id}": {
+        put: {
+          tags: ["AdminPrivacy"],
+          summary: "Update a privacy policy",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              in: "path",
+              name: "id",
+              required: true,
+              schema: {
+                type: "string"
+              },
+              description: "Privacy policy ID to update"
+            }
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/PrivacyPolicy"
+                }
+              }
+            }
+          },
+          responses: {
+            200: {
+              description: "Privacy policy updated successfully",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      statusCode: {
+                        type: "number",
+                        example: 200
+                      },
+                      message: {
+                        type: "string",
+                        example: "Privacy policy updated successfully"
+                      },
+                      data: {
+                        $ref: "#/components/schemas/PrivacyPolicy"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            400: {
+              description: "Privacy policy not found"
+            },
+            500: {
+              description: "Some server error"
+            }
+          }
+        }
+      },
+      "/api/adminprivacy/getprivacy": {
+        get: {
+          tags: ["AdminPrivacy"],
+          summary: "Get the active privacy policy",
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: {
+              description: "Privacy policy retrieved successfully",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      statusCode: {
+                        type: "number",
+                        example: 200
+                      },
+                      message: {
+                        type: "string",
+                        example: "Privacy policy retrieved successfully"
+                      },
+                      data: {
+                        $ref: "#/components/schemas/PrivacyPolicy"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            400: {
+              description: "No active privacy policy found"
+            },
+            500: {
+              description: "Some server error"
+            }
+          }
+        }
+      },
+      "/api/adminprivacy/deleteprivacy/{id}": {
+        delete: {
+          tags: ["AdminPrivacy"],
+          summary: "Delete a privacy policy",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              in: "path",
+              name: "id",
+              required: true,
+              schema: {
+                type: "string"
+              },
+              description: "Privacy policy ID to delete"
+            }
+          ],
+          responses: {
+            200: {
+              description: "Privacy policy deleted successfully",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      statusCode: {
+                        type: "number",
+                        example: 200
+                      },
+                      message: {
+                        type: "string",
+                        example: "Privacy policy deleted successfully"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            400: {
+              description: "Privacy policy not found"
+            },
+            500: {
+              description: "Some server error"
+            }
+          }
+        }
+      }
     }
-  }
-};
+  };

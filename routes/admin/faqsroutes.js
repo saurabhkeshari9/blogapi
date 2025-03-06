@@ -6,9 +6,9 @@ const { faqsSchema } = require('../../validation/admin/adminfaqsvalidation');
 const router = express.Router();
 
 
-router.get('/faqs', isAdmin, getAllFAQs);
-router.post('/faqs', isAdmin, validate(faqsSchema), createFAQ);
-router.put('/faqs/:faqId', isAdmin, validate(faqsSchema), updateFAQ);
-router.delete('/faqs/:faqId', isAdmin, deleteFAQ);
+router.get('/getfaqs', isAdmin, getAllFAQs);
+router.post('/createfaqs', isAdmin, validate(faqsSchema), createFAQ);
+router.put('/updatefaqs/:faqId', isAdmin, validate(faqsSchema), updateFAQ);
+router.delete('/deletefaqs/:faqId', isAdmin, deleteFAQ);
 
 module.exports = router;
